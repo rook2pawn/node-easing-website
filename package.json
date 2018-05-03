@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "bankai start app.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,8 @@
   "dependencies": {
     "bankai": "^9.11.1",
     "choo": "^6.11.0-preview1",
-    "easing": "^1.1.1"
+    "easing": "^1.1.1",
+    "nanocomponent": "^6.5.2",
+    "sheetify": "^7.3.2"
   }
 }
