@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "bankai start app.js"
+    "start": "bankai start app.js",
+    "build": "bankai build app.js --base 'https://rook2pawn.github.io/node-easing'"
   },
   "repository": {
     "type": "git",

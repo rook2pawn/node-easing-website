@@ -7,6 +7,7 @@ const path = require("path")
 const Nanocomponent = require("nanocomponent")
 const css = require("sheetify")
 css("./style.css")
+css("./materialize.min.css")
 
 class EaseComponent extends Nanocomponent {
   constructor () {
@@ -17,7 +18,7 @@ class EaseComponent extends Nanocomponent {
     this.list;
     this.width = 80;
     this.height = 80;
-    this.maxPoints = 210;
+    this.maxPoints = 200;
   }
 
   createCanvas () {
@@ -50,9 +51,9 @@ class EaseComponentList extends EaseComponent {
     })
     this.ctx.stroke();
     return html`
-    <div class="easeComponent">
+    <div class="easeComponent col s2">
       <div>
-        <h3>${functionName}</h3>
+        <div class="componentName">${functionName}</div>
         ${this.canvas}
       </div>
       <div class="controls"></div>
@@ -75,59 +76,33 @@ class EaseComponentEvent extends EaseComponent {
     let idx = 0;
     let pointList = [];
     this.lastPoint = { x : 0, y: this.height};
+    this.ctx.strokeStyle = "black";
+    this.ctx.lineWidth = 2;
+
     this.ee.on("data", (value) => {
+      if (idx === 0) {
+        this.ctx.clearRect(0,0,this.width, this.height)
+        this.ctx.beginPath();
+        this.ctx.moveTo(0,this.height);
+      }
       let x = idx*spacing;
       let y = this.height - (value*this.height);
       pointList.push({x, y})
-
-
-      if (pointList.length >= ~~(this.maxPoints / 6)) {
-        let point = pointList.shift();
-        this.ctx.beginPath();
-        this.ctx.fillStyle = "white";
-        this.ctx.arc(point.x, point.y, 4, 0, Math.PI*2, true)
-        this.ctx.fill();
-      }
-      this.ctx.beginPath();
-      this.ctx.moveTo(this.lastPoint.x, this.lastPoint.y)
-      this.ctx.strokeStyle = "black";
-      this.ctx.lineWidth = 2;
       this.ctx.lineTo(x, y)
       this.lastPoint = { x , y }
       this.ctx.stroke();
       idx++;
     })
-    this.animateRemainingPoints = () => {
-      if (pointList.length === 0) {
-        return;
-      }
-      let point = pointList.shift();
-      this.ctx.beginPath();
-      this.ctx.fillStyle = "white";
-      this.ctx.arc(point.x, point.y, 4, 0, Math.PI*2, true)
-      this.ctx.fill();
-      window.requestAnimationFrame(this.animateRemainingPoints)
-    }
     this.ee.on("end", () => {
-      console.log(pointList.length)
-      window.requestAnimationFrame(this.animateRemainingPoints)
-//      this.ctx.stroke();
     })
     this.ee.on("repeat", () => {
       pointList = [];
       idx = 0;
-      this.ctx.moveTo(this.width,0);
-      this.ctx.closePath()
-      this.ctx.clearRect(0,0,this.width, this.height)
-
-      this.ctx.moveTo(0,this.height);
-      this.ctx.lineWidth = 1;
-      this.ctx.strokeStyle = "black";
     })
     return html`
-    <div class="easeComponent">
+    <div class="easeComponent col s2">
       <div>
-        <h3>${functionName} - event </h3>
+        <div class="componentName">${functionName} - event </div>
         ${this.canvas}
       </div>
       <div class="controls"></div>
@@ -170,29 +145,35 @@ function viewEaseComponentEvent (state, functionName, options = {}) {
   return html`<div>${state.eases.event[functionName].render(functionName, options)}</div>`
 }
 
-/*
-      ${Easing.uniqueList.map((funcName) => {
-        return html`<div>${viewEaseComponentEvent(state, funcName)}</div>`
-      })}
-      */
 function view (state, emit) {
   return html`
     <body>
-      <div class="container">
-      ${Easing.uniqueList.map((funcName) => {
-        return html`<div>${viewEaseComponentList(state, funcName)}</div>`
-      })}
+      <nav>
+      <div class="nav-wrapper">
+        <div class="center brand-logo">Easing</div>
+        <a href="https://github.com/rook2pawn/node-easing" class="brand-logo right"><img src="assets/github.png"></a>
       </div>
-      <div class="clear"></div>
-      <div class="container">
-      ${Easing.uniqueList.map((funcName) => {
-        return html`<div>${viewEaseComponentList(state, funcName, { endToEnd: true} )}</div>`
-      })}
-      </div>
-      <div class="clear"></div>
-      <div class="container">
+      </nav>
+
+      <div class="container row">
+        <div class="col s12"><span class="flow-text">Event</span></div>
         ${Easing.uniqueList.map((funcName) => {
           return html`<div>${viewEaseComponentEvent(state, funcName)}</div>`
+        })}
+      </div>
+      <div class="clear"></div>
+      <div class="container row">
+        <div class="col s12"><span class="flow-text">Static</span></div>
+        ${Easing.uniqueList.map((funcName) => {
+          return html`<div>${viewEaseComponentList(state, funcName)}</div>`
+        })}
+      </div>
+      <div class="clear"></div>
+      <div class="container row">
+        <div class="col s12"><span class="flow-text">Static - End to end</span></div>
+
+        ${Easing.uniqueList.map((funcName) => {
+          return html`<div>${viewEaseComponentList(state, funcName, { endToEnd: true} )}</div>`
         })}
       </div>
       <div class="clear"></div>
