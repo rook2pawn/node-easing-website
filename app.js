@@ -44,7 +44,11 @@ class EaseComponentList extends EaseComponent {
     this.canvas = this.createCanvas();
     this.ctx = this.canvas.getContext("2d");
     this.ctx.moveTo(0,this.height);
-    this.list = Easing(this.maxPoints, functionName, options)
+    if (functionName == "sigmoid") {
+      this.list = Easing(this.maxPoints, functionName, {start:-10, end:10});
+    } else {
+      this.list = Easing(this.maxPoints, functionName, options)
+    }
     const spacing = (this.width / this.maxPoints)
     this.list.forEach((value,idx) => {
       this.ctx.lineTo(idx*spacing, this.height - (value*this.height))
@@ -71,7 +75,11 @@ class EaseComponentEvent extends EaseComponent {
     this.functionName = functionName
     this.canvas = this.createCanvas();
     this.ctx = this.canvas.getContext("2d");
-    this.ee = Easing.event(this.maxPoints, functionName, {duration:3*1000, repeat:true})
+    if (functionName == "sigmoid") {
+      this.ee = Easing.event(this.maxPoints, functionName, {start:-10, end: 10, duration:3*1000, repeat:true})
+    } else {
+      this.ee = Easing.event(this.maxPoints, functionName, {duration:3*1000, repeat:true})
+    }
     const spacing = (this.width / this.maxPoints)
     let idx = 0;
     let pointList = [];
